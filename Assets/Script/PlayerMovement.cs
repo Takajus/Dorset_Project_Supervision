@@ -13,6 +13,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private GameObject _camera;
 
     [SerializeField] private float speed = 6f;
+    [SerializeField] private float crouchSpeed;
+    private float currentSpeed;
     public float gravity = -9.18f;
     [SerializeField] private float _jumpHeight = 3f;
     [SerializeField] private float turnSmoothTime = 0.1f;
@@ -24,9 +26,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform _GroundCheckPos;
     [SerializeField] private LayerMask GroundMask;
 
+    private bool _bIsCrouch;
+
     [Header("Player Action")]
 
     //[SerializeField] private bool test = false;
+    [SerializeField] private Animator _anim;
 
     [Header("Camera")]
 
@@ -45,6 +50,7 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         _OriginalCamPos = new Vector3(transform.position.x, _camera.transform.position.y, _camera.transform.position.z);
+        currentSpeed = speed;
     }
 
     void Update()
@@ -53,6 +59,8 @@ public class PlayerMovement : MonoBehaviour
 
         _OriginalCamPos.x = transform.position.x;
 
+        #region Camera Transition
+
         if (!_bCameraLock)
         {
 
@@ -60,13 +68,11 @@ public class PlayerMovement : MonoBehaviour
             {
                 _timer += Time.deltaTime;
                 float ration = _timer / 3;
-                print("1");
                 //_camera.transform.position = Vector3.MoveTowards(_camera.transform.position, CameraScene.position, 25 * Time.deltaTime);
                 _camera.transform.position = Vector3.Lerp(_camera.transform.position, _OriginalCamPos, ration);
             }
             else/* if (_camera.transform.position.y == _OriginalCamPos.y)*/
             {
-                print("2");
                 _camera.transform.position = new Vector3(_OriginalCamPos.x, _OriginalCamPos.y, _OriginalCamPos.z);
             }
             //_camera.transform.position = new Vector3(transform.position.x, _OriginalCamPos.y, _OriginalCamPos.z);
@@ -90,13 +96,19 @@ public class PlayerMovement : MonoBehaviour
             }
 
         }
+
+        #endregion
+
+
     }
 
     private void MovementInput()
     {
         _bIsGrounded = Physics.CheckSphere(_GroundCheckPos.position, _groundDistance, GroundMask);
 
-        if(_bIsGrounded && _velocity.y < 0)
+        _anim.SetBool("bGrounded", _bIsGrounded);
+
+        if (_bIsGrounded && _velocity.y < 0)
         {
             _velocity.y = -2f;
         }
@@ -112,18 +124,50 @@ public class PlayerMovement : MonoBehaviour
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
-            _controller.Move(direction * Time.deltaTime * speed);
+            _controller.Move(direction * Time.deltaTime * currentSpeed);
         }
 
         if(Input.GetButtonDown("Jump") && _bIsGrounded)
         {
             _velocity.y = Mathf.Sqrt(_jumpHeight * -2f * gravity);
+            if (_bIsCrouch)
+            {
+                _bIsCrouch = false;
+                _controller.height = 2f;
+                _controller.center = new Vector3(0, 1f, 0);
+                currentSpeed = speed;
+                _anim.SetTrigger("CrouchEnd");
+
+            }
         }
 
         _velocity.y += gravity * Time.deltaTime;
 
         _controller.Move(_velocity * Time.deltaTime);
-        
+
+        _anim.SetFloat("velocity", direction.magnitude);
+
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            if (_bIsCrouch)
+            {
+                _bIsCrouch = false;
+                _controller.height = 2f;
+                _controller.center = new Vector3(0, 1f, 0);
+                currentSpeed = speed;
+                _anim.SetTrigger("CrouchEnd");
+
+            }
+            else if (!_bIsCrouch)
+            {
+                _bIsCrouch = true;
+                _controller.height = 1.4f;
+                _controller.center = new Vector3(0, 0.7f, 0);
+                currentSpeed = crouchSpeed;
+                _anim.SetTrigger("CrouchStart");
+            }
+        }
+
     }
 
     private void OnTriggerEnter(Collider other)
