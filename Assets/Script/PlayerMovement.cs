@@ -26,13 +26,14 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Player Action")]
 
-    [SerializeField] private bool test = false;
+    //[SerializeField] private bool test = false;
 
     [Header("Camera")]
 
     [SerializeField] private bool _bCameraLock;
-    [SerializeField] private Transform CameraScene;
-    private float timer = 0;
+    [SerializeField] private Transform _CameraScene;
+    private Vector3 _OriginalCamPos;
+    private float _timer = 0;
 
     #endregion
 
@@ -41,30 +42,51 @@ public class PlayerMovement : MonoBehaviour
         _controller = GetComponent<CharacterController>();
     }
 
+    private void Start()
+    {
+        _OriginalCamPos = new Vector3(transform.position.x, _camera.transform.position.y, _camera.transform.position.z);
+    }
+
     void Update()
     {
         MovementInput();
 
+        _OriginalCamPos.x = transform.position.x;
+
         if (!_bCameraLock)
         {
-            _camera.transform.position = new Vector3(transform.position.x, _camera.transform.position.y, _camera.transform.position.z);
+
+            if (_camera.transform.position.y != _OriginalCamPos.y && _camera.transform.position.z != _OriginalCamPos.z)
+            {
+                _timer += Time.deltaTime;
+                float ration = _timer / 3;
+                print("1");
+                //_camera.transform.position = Vector3.MoveTowards(_camera.transform.position, CameraScene.position, 25 * Time.deltaTime);
+                _camera.transform.position = Vector3.Lerp(_camera.transform.position, _OriginalCamPos, ration);
+            }
+            else/* if (_camera.transform.position.y == _OriginalCamPos.y)*/
+            {
+                print("2");
+                _camera.transform.position = new Vector3(_OriginalCamPos.x, _OriginalCamPos.y, _OriginalCamPos.z);
+            }
+            //_camera.transform.position = new Vector3(transform.position.x, _OriginalCamPos.y, _OriginalCamPos.z);
         }
         else if (_bCameraLock)
         {
             // Faire une transition fluide pour le placement de la camera
             //_camera.transform.position = CameraScene.position;
             //_camera.transform.rotation = CameraScene.rotation;
-            if (_camera.transform.position != CameraScene.position)
+            if (_camera.transform.position != _CameraScene.position)
             {
-                timer += Time.deltaTime;
-                float ration = timer / 3;
+                _timer += Time.deltaTime;
+                float ration = _timer / 3;
 
                 //_camera.transform.position = Vector3.MoveTowards(_camera.transform.position, CameraScene.position, 25 * Time.deltaTime);
-                _camera.transform.position = Vector3.Lerp(_camera.transform.position, CameraScene.position, ration);
+                _camera.transform.position = Vector3.Lerp(_camera.transform.position, _CameraScene.position, ration);
             }
-            else if (_camera.transform.position == CameraScene.position)
+            else/* if (_camera.transform.position == _CameraScene.position)*/
             {
-                _camera.transform.position = CameraScene.position;
+                _camera.transform.position = _CameraScene.position;
             }
 
         }
