@@ -86,7 +86,9 @@ public class PlayerMovement : MonoBehaviour
 
         _controller.Move(_velocity * Time.deltaTime);
 
-        if (!_bIsKnockBack)
+        _anim.SetBool("bIsCrouch", _bIsCrouch);
+
+        if (!_bIsKnockBack && !Input.GetKeyDown(KeyCode.E))
         {
             MovementInput();
         }
@@ -138,7 +140,12 @@ public class PlayerMovement : MonoBehaviour
 
         #endregion
 
+        if(Input.GetKeyDown(KeyCode.E) && _bIsGrounded)
+        {
+            _anim.SetTrigger("Interact");
 
+            //interation Manivelle
+        }
     }
 
     private void MovementInput()
