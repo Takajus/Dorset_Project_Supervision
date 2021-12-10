@@ -7,9 +7,10 @@ public class PlayerMovement : MonoBehaviour
 
     #region Variable
 
+    private CharacterController _controller;
+
     [Header("Player Movement")]
 
-    private CharacterController _controller;
     [Tooltip("Mettre la Camera avec la bonne position de départ")]
     [SerializeField] private GameObject _camera;
     [Tooltip("Vitesse de déplacement debout")]
