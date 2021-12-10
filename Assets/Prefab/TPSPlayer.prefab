@@ -318,15 +318,14 @@ MonoBehaviour:
   _bKnockOntTime: 0
   _jumpHeight: 3
   turnSmoothTime: 0.1
-  _bIsGrounded: 0
   _groundDistance: 0.4
   _GroundCheckPos: {fileID: 7527131480602015612}
   GroundMask:
     serializedVersion: 2
     m_Bits: 64
   _anim: {fileID: 7527131479491124245}
-  life: 5
-  _bCameraLock: 0
+  currentLife: 0
+  _life: 5
   _CameraScene: {fileID: 0}
 --- !u!114 &687685005
 MonoBehaviour:

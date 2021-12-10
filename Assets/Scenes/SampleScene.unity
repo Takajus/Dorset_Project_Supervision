@@ -1748,14 +1748,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 687685005, guid: 3412a2fc5dcd73040acd9216f940aac5, type: 3}
-      propertyPath: _damage
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 687685005, guid: 3412a2fc5dcd73040acd9216f940aac5, type: 3}
-      propertyPath: _lifeTime
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 687685005, guid: 3412a2fc5dcd73040acd9216f940aac5, type: 3}
       propertyPath: _lightSource
       value: 
       objectReference: {fileID: 705507994}
@@ -1775,10 +1767,6 @@ PrefabInstance:
       propertyPath: _CameraScene
       value: 
       objectReference: {fileID: 1185123762}
-    - target: {fileID: 7527131480602449130, guid: 3412a2fc5dcd73040acd9216f940aac5, type: 3}
-      propertyPath: _knockBackForce
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 7527131480602449132, guid: 3412a2fc5dcd73040acd9216f940aac5, type: 3}
       propertyPath: m_RootOrder
       value: 6

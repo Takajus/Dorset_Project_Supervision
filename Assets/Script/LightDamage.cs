@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class LightDamage : MonoBehaviour
 {
+    [Tooltip("Mettre le Directional Light")]
     [SerializeField] private Light _lightSource;
+    [Tooltip("PAS TOUCHE !!")]
     [SerializeField] private GameObject _lightDetection;
     private PlayerMovement _playerMov;
     private float _playerLightDist;
     private Vector3 _lightPos, _playerLightDir;
     private Ray _ray;
     private RaycastHit _hit;
+    [Tooltip("PAS TOUCHE !!")]
     [SerializeField] private LayerMask _wallMask;
     private bool _bFirstWarning, _bIslosingHealth;
+    [Tooltip("MODIFICATION OK ^^")]
     [SerializeField] private float _lifeTime, _damage;
 
     private void Awake()
@@ -41,7 +45,7 @@ public class LightDamage : MonoBehaviour
                 _bFirstWarning = false;
             }
 
-            if (!_bIslosingHealth && _playerMov.life > 0)
+            if (!_bIslosingHealth && _playerMov.currentLife > 0)
             {
                 StartCoroutine(LoseHealth());
             }
@@ -52,8 +56,8 @@ public class LightDamage : MonoBehaviour
     private IEnumerator LoseHealth()
     {
         _bIslosingHealth = true;
-        _playerMov.life -= _damage;
-        print(_playerMov.life);
+        _playerMov.currentLife -= _damage;
+        print(_playerMov.currentLife);
 
         yield return new WaitForSeconds(_lifeTime);
 
