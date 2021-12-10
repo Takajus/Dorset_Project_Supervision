@@ -99,7 +99,6 @@ public class PlayerMovement : MonoBehaviour
 
         #endregion
 
-
     }
 
     private void MovementInput()

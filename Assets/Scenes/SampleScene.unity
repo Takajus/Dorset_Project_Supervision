@@ -725,7 +725,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   m_LocalRotation: {x: 0.4514928, y: -0.21160327, z: 0.08006764, w: 0.86311495}
-  m_LocalPosition: {x: 0, y: 20, z: 0}
+  m_LocalPosition: {x: 116.6, y: 127.4, z: -115}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1219,7 +1219,7 @@ GameObject:
   - component: {fileID: 1310301676}
   - component: {fileID: 1310301675}
   - component: {fileID: 1310301674}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1742,6 +1742,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 687685005, guid: 3412a2fc5dcd73040acd9216f940aac5, type: 3}
+      propertyPath: _lightSource
+      value: 
+      objectReference: {fileID: 705507994}
     - target: {fileID: 7527131480602449130, guid: 3412a2fc5dcd73040acd9216f940aac5, type: 3}
       propertyPath: _camera
       value: 
