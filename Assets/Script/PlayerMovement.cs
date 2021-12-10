@@ -15,7 +15,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float speed = 6f;
     [SerializeField] private float crouchSpeed;
     private float currentSpeed;
-    public float gravity = -9.18f;
+    [SerializeField] private float gravity = -9.18f;
+    [SerializeField] private float _knockBackForce;
+    public bool _bIsKnockBack, _bKnockOntTime;
     [SerializeField] private float _jumpHeight = 3f;
     [SerializeField] private float turnSmoothTime = 0.1f;
     private float turnSmoothVelocity;
@@ -32,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
 
     //[SerializeField] private bool test = false;
     [SerializeField] private Animator _anim;
+    public float life;
 
     [Header("Camera")]
 
@@ -51,11 +54,33 @@ public class PlayerMovement : MonoBehaviour
     {
         _OriginalCamPos = new Vector3(transform.position.x, _camera.transform.position.y, _camera.transform.position.z);
         currentSpeed = speed;
+        _bIsKnockBack = false;
+        _bKnockOntTime = true;
     }
 
     void Update()
     {
-        MovementInput();
+        _bIsGrounded = Physics.CheckSphere(_GroundCheckPos.position, _groundDistance, GroundMask);
+        _anim.SetBool("bGrounded", _bIsGrounded);
+
+        if (_bIsGrounded && _velocity.y < 0)
+        {
+            _velocity.y = -2f;
+        }
+
+        _velocity.y += gravity * Time.deltaTime;
+
+        _controller.Move(_velocity * Time.deltaTime);
+
+        if (!_bIsKnockBack)
+        {
+            MovementInput();
+        }
+        else if (_bIsKnockBack)
+        {
+            StartCoroutine(KnockBack());
+        }
+        
 
         _OriginalCamPos.x = transform.position.x;
 
@@ -99,18 +124,19 @@ public class PlayerMovement : MonoBehaviour
 
         #endregion
 
+
     }
 
     private void MovementInput()
     {
-        _bIsGrounded = Physics.CheckSphere(_GroundCheckPos.position, _groundDistance, GroundMask);
+        //_bIsGrounded = Physics.CheckSphere(_GroundCheckPos.position, _groundDistance, GroundMask);
 
-        _anim.SetBool("bGrounded", _bIsGrounded);
+        /*_anim.SetBool("bGrounded", _bIsGrounded);
 
         if (_bIsGrounded && _velocity.y < 0)
         {
             _velocity.y = -2f;
-        }
+        }*/
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
@@ -140,9 +166,9 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        _velocity.y += gravity * Time.deltaTime;
+        /*_velocity.y += gravity * Time.deltaTime;
 
-        _controller.Move(_velocity * Time.deltaTime);
+        _controller.Move(_velocity * Time.deltaTime);*/
 
         _anim.SetFloat("velocity", direction.magnitude);
 
@@ -183,5 +209,30 @@ public class PlayerMovement : MonoBehaviour
         {
             _bCameraLock = false;
         }
+    }
+
+    public IEnumerator KnockBack()
+    {
+        if (_bKnockOntTime)
+        {
+            //_bKnockOntTime = false;
+            Vector3 direction = (transform.forward - transform.position).normalized;
+            direction.y = 1f;
+
+            _controller.Move(direction * Time.deltaTime * _knockBackForce);
+
+            //_rb.AddForce(direction * _knockBackForce, ForceMode.Impulse);
+
+            yield return new WaitForSeconds(0.2f);
+
+            if (_bIsGrounded)
+            {
+                _bIsKnockBack = false;
+                _bKnockOntTime = false;
+            }
+                
+        }
+        
+        
     }
 }

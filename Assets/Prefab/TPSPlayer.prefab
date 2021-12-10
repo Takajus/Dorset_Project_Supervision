@@ -313,6 +313,9 @@ MonoBehaviour:
   speed: 6
   crouchSpeed: 3
   gravity: -9.18
+  _knockBackForce: 5
+  _bIsKnockBack: 0
+  _bKnockOntTime: 0
   _jumpHeight: 3
   turnSmoothTime: 0.1
   _bIsGrounded: 0
@@ -322,6 +325,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   _anim: {fileID: 7527131479491124245}
+  life: 5
   _bCameraLock: 0
   _CameraScene: {fileID: 0}
 --- !u!114 &687685005
@@ -337,10 +341,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _lightSource: {fileID: 0}
-  _player: {fileID: 1147952263}
+  _lightDetection: {fileID: 1147952263}
   _wallMask:
     serializedVersion: 2
     m_Bits: 64
+  _lifeTime: 0.5
+  _damage: 1
 --- !u!1001 &7527131479491124247
 PrefabInstance:
   m_ObjectHideFlags: 0
