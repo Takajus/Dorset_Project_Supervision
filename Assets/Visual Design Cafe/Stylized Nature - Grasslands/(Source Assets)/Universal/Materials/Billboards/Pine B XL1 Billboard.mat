@@ -177,8 +177,7 @@ Material:
     - __dirty: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DiffusionProfileAsset: {r: 2.2888926e+38, g: 1.2389358e-26, b: 7.69327e-37,
-        a: 0.00018220427}
+    - _DiffusionProfileAsset: {r: 2.2888926e+38, g: 1.2389358e-26, b: 7.69327e-37, a: 0.00018220427}
     - _DoubleSidedConstants: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _GlossRemap: {r: 0, g: 1, b: 0, a: 0}
@@ -191,3 +190,4 @@ Material:
     - _TintVariation: {r: 1, g: 1, b: 1, a: 1}
     - _TranslucencyColor: {r: 0.4352941, g: 0.737255, b: 0.2862745, a: 1}
     - _TrunkBendFactor: {r: 2, g: 0.3, b: 0, a: 0}
+  m_BuildTextureStacks: []

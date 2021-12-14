@@ -7,23 +7,34 @@ public class PlayerMovement : MonoBehaviour
 
     #region Variable
 
+    private CharacterController _controller;
+
     [Header("Player Movement")]
 
-    private CharacterController _controller;
+    [Tooltip("Mettre la Camera avec la bonne position de départ")]
     [SerializeField] private GameObject _camera;
-
+    [Tooltip("Vitesse de déplacement debout")]
     [SerializeField] private float speed = 6f;
-    [SerializeField] private float crouchSpeed;
+    [Tooltip("Vitesse de déplacement accroupi")]
+    [SerializeField] private float crouchSpeed = 3f;
     private float currentSpeed;
-    public float gravity = -9.18f;
+    [Tooltip("TOUCHE ENCORE MOINS !!")]
+    [SerializeField] private float gravity = -9.18f;
+    [Tooltip("PAS TOUCHE !!")]
+    [SerializeField] private float _knockBackForce = 5f;
+    [HideInInspector] public bool _bIsKnockBack, _bKnockOntTime;
+    [Tooltip("Force du saut")]
     [SerializeField] private float _jumpHeight = 3f;
+    [Tooltip("PAS TOUCHE !!")]
     [SerializeField] private float turnSmoothTime = 0.1f;
     private float turnSmoothVelocity;
 
-    [SerializeField] private bool _bIsGrounded;
+    private bool _bIsGrounded;
     [SerializeField] private float _groundDistance = 0.4f;
     private Vector3 _velocity;
+    [Tooltip("PAS TOUCHE !!")]
     [SerializeField] private Transform _GroundCheckPos;
+    [Tooltip("PAS TOUCHE !!")]
     [SerializeField] private LayerMask GroundMask;
 
     private bool _bIsCrouch;
@@ -31,14 +42,19 @@ public class PlayerMovement : MonoBehaviour
     [Header("Player Action")]
 
     //[SerializeField] private bool test = false;
+    [Tooltip("PAS TOUCHE !!")]
     [SerializeField] private Animator _anim;
+    [HideInInspector] public float currentLife;
+    [Tooltip("MODIFICATION OK ^^")]
+    [SerializeField] private float _life;
 
     [Header("Camera")]
 
-    [SerializeField] private bool _bCameraLock;
+    [Tooltip("Mettre le GameObject avec la bonne Position et Rotation pour la camera d'énigme")]
     [SerializeField] private Transform _CameraScene;
     private Vector3 _OriginalCamPos;
     private float _timer = 0;
+    private bool _bCameraLock;
 
     #endregion
 
@@ -50,12 +66,37 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         _OriginalCamPos = new Vector3(transform.position.x, _camera.transform.position.y, _camera.transform.position.z);
+        currentLife = _life;
         currentSpeed = speed;
+        _bIsKnockBack = false;
+        _bKnockOntTime = true;
     }
 
     void Update()
     {
-        MovementInput();
+        _bIsGrounded = Physics.CheckSphere(_GroundCheckPos.position, _groundDistance, GroundMask);
+        _anim.SetBool("bGrounded", _bIsGrounded);
+
+        if (_bIsGrounded && _velocity.y < 0)
+        {
+            _velocity.y = -2f;
+        }
+
+        _velocity.y += gravity * Time.deltaTime;
+
+        _controller.Move(_velocity * Time.deltaTime);
+
+        _anim.SetBool("bIsCrouch", _bIsCrouch);
+
+        if (!_bIsKnockBack && !Input.GetKeyDown(KeyCode.E))
+        {
+            MovementInput();
+        }
+        else if (_bIsKnockBack)
+        {
+            StartCoroutine(KnockBack());
+        }
+        
 
         _OriginalCamPos.x = transform.position.x;
 
@@ -99,19 +140,24 @@ public class PlayerMovement : MonoBehaviour
 
         #endregion
 
+        if(Input.GetKeyDown(KeyCode.E) && _bIsGrounded)
+        {
+            _anim.SetTrigger("Interact");
 
+            //interation Manivelle
+        }
     }
 
     private void MovementInput()
     {
-        _bIsGrounded = Physics.CheckSphere(_GroundCheckPos.position, _groundDistance, GroundMask);
+        //_bIsGrounded = Physics.CheckSphere(_GroundCheckPos.position, _groundDistance, GroundMask);
 
-        _anim.SetBool("bGrounded", _bIsGrounded);
+        /*_anim.SetBool("bGrounded", _bIsGrounded);
 
         if (_bIsGrounded && _velocity.y < 0)
         {
             _velocity.y = -2f;
-        }
+        }*/
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
@@ -141,9 +187,9 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        _velocity.y += gravity * Time.deltaTime;
+        /*_velocity.y += gravity * Time.deltaTime;
 
-        _controller.Move(_velocity * Time.deltaTime);
+        _controller.Move(_velocity * Time.deltaTime);*/
 
         _anim.SetFloat("velocity", direction.magnitude);
 
@@ -184,5 +230,30 @@ public class PlayerMovement : MonoBehaviour
         {
             _bCameraLock = false;
         }
+    }
+
+    public IEnumerator KnockBack()
+    {
+        if (_bKnockOntTime)
+        {
+            //_bKnockOntTime = false;
+            Vector3 direction = (transform.forward - transform.position).normalized;
+            direction.y = 1f;
+
+            _controller.Move(direction * Time.deltaTime * _knockBackForce);
+
+            //_rb.AddForce(direction * _knockBackForce, ForceMode.Impulse);
+
+            yield return new WaitForSeconds(0.2f);
+
+            if (_bIsGrounded)
+            {
+                _bIsKnockBack = false;
+                _bKnockOntTime = false;
+            }
+                
+        }
+        
+        
     }
 }
