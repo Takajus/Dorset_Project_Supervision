@@ -47,6 +47,10 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public float currentLife;
     [Tooltip("MODIFICATION OK ^^")]
     [SerializeField] private float _life;
+    [Tooltip("Temps d'interaction manivelle")]
+    [SerializeField] private float _minimumHeldDuration;
+    private bool _bCanTurn, _bKeyHeld, _bOneTime;
+    private float _spacePressedTime;
 
     [Header("Camera")]
 
@@ -140,11 +144,40 @@ public class PlayerMovement : MonoBehaviour
 
         #endregion
 
-        if(Input.GetKeyDown(KeyCode.E) && _bIsGrounded)
+        if (_bCanTurn && _bIsGrounded) // bool ne passe pas true après trigger
         {
-            _anim.SetTrigger("Interact");
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                // Use has pressed the Space key. We don't know if they'll release or hold it, so keep track of when they started holding it.
+                _spacePressedTime = Time.timeSinceLevelLoad;
+                _bKeyHeld = false;
+                _anim.SetTrigger("Interact");
+            }
+            else if (Input.GetKeyUp(KeyCode.E))
+            {
+                if (!_bKeyHeld)
+                {
+                    // Player has released the space key without holding it.
+                    // TODO: Perform the action for when Space is pressed.
+                }
+                _bKeyHeld = false;
+                _anim.SetTrigger("InteractEnd");
+            }
 
-            //interation Manivelle
+            if (Input.GetKey(KeyCode.E))
+            {
+                if (Time.timeSinceLevelLoad - _spacePressedTime > _minimumHeldDuration)
+                {
+                    // Player has held the Space key for .25 seconds. Consider it "held"
+                    _bKeyHeld = true;
+                    print("holding complete");
+                    if (_bOneTime)
+                    {
+                        _bOneTime = false;
+
+                    }
+                }
+            }
         }
     }
 
@@ -222,6 +255,13 @@ public class PlayerMovement : MonoBehaviour
         {
             _bCameraLock = true;
         }
+        
+        if (other.tag == "InteractionArea")
+        {
+            _bCanTurn = true;
+            _bOneTime = true;
+            print("Trigger Enter");
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -229,6 +269,13 @@ public class PlayerMovement : MonoBehaviour
         if (other.tag == "SceneTransition")
         {
             _bCameraLock = false;
+        }
+        
+        if (other.tag == "InteractionArea")
+        {
+            _bCanTurn = false;
+            _bOneTime = true;
+            print("Trigger Exit");
         }
     }
 
