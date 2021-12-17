@@ -7,6 +7,8 @@ TagManager:
   - SceneTransition
   - InteractionArea
   - ObjectPush
+  - Umbrella
+  - CanUmbrella
   layers:
   - Default
   - TransparentFX

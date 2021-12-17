@@ -22,7 +22,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float gravity = -9.18f;
     [Tooltip("PAS TOUCHE !!")]
     [SerializeField] private float _knockBackForce = 5f;
-    [HideInInspector] public bool _bIsKnockBack, _bKnockOntTime;
+    //[HideInInspector]
+    public bool _bIsKnockBack, _bKnockOntTime;
     [Tooltip("Force du saut")]
     [SerializeField] private float _jumpHeight = 3f;
     [Tooltip("PAS TOUCHE !!")]
@@ -51,6 +52,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _minimumHeldDuration;
     private bool _bCanTurn, _bKeyHeld, _bOneTime;
     private float _spacePressedTime;
+    [SerializeField] private GameObject _umbrellaHolder, _umbrella, _defaultUmbrella;
+    private bool _bCanTakeUmbrella, _bIsTaken, _bInUmbrellaZone;
 
     [Header("Camera")]
 
@@ -59,6 +62,10 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _OriginalCamPos;
     private float _timer = 0;
     private bool _bCameraLock;
+
+    [Header("Pop-Up")]
+
+    [SerializeField] private GameObject _astuce1, _astuce2, _astuce3;
 
     #endregion
 
@@ -74,6 +81,7 @@ public class PlayerMovement : MonoBehaviour
         currentSpeed = speed;
         _bIsKnockBack = false;
         _bKnockOntTime = true;
+        _bCanTakeUmbrella = false;
     }
 
     void Update()
@@ -179,6 +187,8 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
+
+        UmbrellaSystem();
     }
 
     private void MovementInput()
@@ -261,6 +271,22 @@ public class PlayerMovement : MonoBehaviour
             _bCanTurn = true;
             _bOneTime = true;
             print("Trigger Enter");
+            _astuce2.SetActive(true);
+        }
+
+        if(other.tag == "Umbrella")
+        {
+            _bCanTakeUmbrella = true;
+        }
+
+        if (other.tag == "CanUmbrella")
+        {
+            _bInUmbrellaZone = true;
+        }
+
+        if (other.tag == "Trash")
+        {
+            _astuce1.SetActive(true);
         }
     }
 
@@ -276,6 +302,22 @@ public class PlayerMovement : MonoBehaviour
             _bCanTurn = false;
             _bOneTime = true;
             print("Trigger Exit");
+            _astuce2.SetActive(false);
+        }
+
+        if (other.tag == "Umbrella")
+        {
+            _bCanTakeUmbrella = false;
+        }
+
+        if (other.tag == "CanUmbrella")
+        {
+            _bInUmbrellaZone = false;
+        }
+
+        if (other.tag == "Trash")
+        {
+            _astuce1.SetActive(false);
         }
     }
 
@@ -298,9 +340,43 @@ public class PlayerMovement : MonoBehaviour
                 _bIsKnockBack = false;
                 _bKnockOntTime = false;
             }
-                
+
+            yield return new WaitForSeconds(0.5f);
+
+            if (_bIsGrounded)
+            {
+                _bKnockOntTime = true;
+            }
+
         }
-        
-        
+    }
+
+    private void UmbrellaSystem()
+    {
+        _umbrellaHolder.transform.position = transform.position;
+
+        if (_bCanTakeUmbrella && !_bIsTaken)
+        {
+            _astuce3.SetActive(true);
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                _umbrella.SetActive(true);
+                _defaultUmbrella.SetActive(false);
+                _bIsTaken = true;
+            }
+               
+        }
+        else if(!_bInUmbrellaZone && !_bCanTakeUmbrella)
+        {
+            _umbrella.SetActive(false);
+            _defaultUmbrella.SetActive(true);
+            _bIsTaken = false;
+        }
+
+        if (_bIsTaken)
+        {
+            _astuce3.SetActive(false);
+        }
     }
 }
