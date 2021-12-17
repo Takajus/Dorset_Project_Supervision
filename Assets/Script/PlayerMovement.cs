@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -34,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _groundDistance = 0.4f;
     private Vector3 _velocity;
     [Tooltip("PAS TOUCHE !!")]
-    [SerializeField] private Transform _GroundCheckPos;
+    [SerializeField] private Transform _GroundCheckPos, t;
     [Tooltip("PAS TOUCHE !!")]
     [SerializeField] private LayerMask GroundMask;
 
@@ -44,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
     //[SerializeField] private bool test = false;
     [Tooltip("PAS TOUCHE !!")]
-    [SerializeField] private Animator _anim;
+    [SerializeField] private Animator _anim, _lever;
     [HideInInspector] public float currentLife;
     [Tooltip("MODIFICATION OK ^^")]
     [SerializeField] private float _life;
@@ -182,13 +183,18 @@ public class PlayerMovement : MonoBehaviour
                     if (_bOneTime)
                     {
                         _bOneTime = false;
-
+                        _lever.SetTrigger("lol");
                     }
                 }
             }
         }
 
         UmbrellaSystem();
+
+        if(currentLife <= 0)
+        {
+            SceneManager.LoadScene(2);
+        }
     }
 
     private void MovementInput()
@@ -225,7 +231,7 @@ public class PlayerMovement : MonoBehaviour
                 _controller.height = 2f;
                 _controller.center = new Vector3(0, 1f, 0);
                 currentSpeed = speed;
-                _anim.SetTrigger("CrouchEnd");
+                //_anim.SetTrigger("CrouchEnd");
 
             }
         }
@@ -241,20 +247,33 @@ public class PlayerMovement : MonoBehaviour
             if (_bIsCrouch)
             {
                 _bIsCrouch = false;
-                _controller.height = 2f;
+                /*_controller.height = 2f;
                 _controller.center = new Vector3(0, 1f, 0);
-                currentSpeed = speed;
-                _anim.SetTrigger("CrouchEnd");
+                currentSpeed = speed;*/
+                //_anim.SetTrigger("CrouchEnd");
 
             }
             else if (!_bIsCrouch)
             {
                 _bIsCrouch = true;
-                _controller.height = 1.4f;
+                /*_controller.height = 1.4f;
                 _controller.center = new Vector3(0, 0.7f, 0);
-                currentSpeed = crouchSpeed;
+                currentSpeed = crouchSpeed;*/
                 _anim.SetTrigger("CrouchStart");
             }
+        }
+
+        if (_bIsCrouch)
+        {
+            _controller.height = 1.4f;
+            _controller.center = new Vector3(0, 0.7f, 0);
+            currentSpeed = crouchSpeed;
+        }
+        else if (!_bIsCrouch)
+        {
+            _controller.height = 2f;
+            _controller.center = new Vector3(0, 1f, 0);
+            currentSpeed = speed;
         }
 
     }
@@ -325,8 +344,9 @@ public class PlayerMovement : MonoBehaviour
     {
         if (_bKnockOntTime)
         {
+            _bIsCrouch = false;
             //_bKnockOntTime = false;
-            Vector3 direction = (transform.forward - transform.position).normalized;
+            Vector3 direction = (t.transform.position - transform.position).normalized;
             direction.y = 1f;
 
             _controller.Move(direction * Time.deltaTime * _knockBackForce);

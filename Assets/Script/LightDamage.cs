@@ -5,7 +5,7 @@ using UnityEngine;
 public class LightDamage : MonoBehaviour
 {
     [Tooltip("Mettre le Directional Light")]
-    [SerializeField] private Light _lightSource;
+    [SerializeField] private GameObject _lightSource;
     [Tooltip("PAS TOUCHE !!")]
     [SerializeField] private GameObject _lightDetection;
     private PlayerMovement _playerMov;
@@ -68,6 +68,7 @@ public class LightDamage : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawRay(_lightDetection.transform.position, _lightPos);
+        //Gizmos.DrawRay(_lightDetection.transform.position, _lightPos);
+        Gizmos.DrawRay(_lightDetection.transform.position, -_playerLightDir);
     }
 }
