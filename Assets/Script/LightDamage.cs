@@ -62,6 +62,7 @@ public class LightDamage : MonoBehaviour
         yield return new WaitForSeconds(_lifeTime);
 
         _bIslosingHealth = false;
+        _bFirstWarning = true;
     }
 
     private void OnDrawGizmos()

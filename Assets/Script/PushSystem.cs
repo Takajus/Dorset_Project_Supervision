@@ -14,9 +14,9 @@ public class PushSystem : MonoBehaviour
         {
             if(rbObject.tag == "ObjectPush")
             {
-                Vector3 forceDirection = hit.gameObject.transform.position - transform.position;
+                Vector3 forceDirection = hit.gameObject.transform.position - transform.position;//new Vector3(hit.gameObject.transform.position.x - transform.position.x, 0, 0);
                 forceDirection.y = 0;
-                forceDirection.z = -5f;
+                forceDirection.z = 0;
                 forceDirection.Normalize();
 
                 rbObject.AddForceAtPosition(_forceMagnitude * forceDirection, transform.position, ForceMode.Impulse);
